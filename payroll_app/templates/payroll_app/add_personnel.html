@@ -1,0 +1,55 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Add {{ role }} | PayMaster{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <h2>Add New {{ role }}</h2>
+    {% if error %}
+        <div style="color: red; margin-bottom: 20px;">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="department">Department:</label>
+            <select id="department" name="department" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Select Department</option>
+                {% for dept in departments %}
+                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="position">Position:</label>
+            <input type="text" id="position" name="position" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="salary">Salary:</label>
+            <input type="number" id="salary" name="salary" step="0.01" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Add {{ role }}</button>
+        <a href="{% url 'org_admin_dashboard' %}" style="margin-left: 10px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

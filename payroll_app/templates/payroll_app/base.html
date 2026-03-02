@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}PayMaster{% endblock %}</title>
+
+    <!-- Load Common CSS -->
+    
+    <!-- Load Chart.js if needed -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    {% block extra_head_styles %}{% endblock %}
+
+</head>
+<body>
+    <div id="app-container">
+    {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // --- GLOBAL JS HELPERS ---
+
+        // Function to retrieve CSRF token for AJAX POST requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Replacement for window.alert() - should be replaced with a real modal/toast
+        function showNotification(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}]`, message);
+            // NOTE: In a production app, replace this with a beautiful modal/toast UI.
+            alert(message);
+        }
+
+        // Replacement for window.confirm() - should be replaced with a real modal
+        function showConfirmModal(message, callback) {
+            // NOTE: In a production app, replace this with a beautiful modal UI.
+            const result = confirm(message);
+            callback(result);
+        }
+
+        // Standard fetch wrapper for POST/PUT/DELETE
+        async function apiFetch(url, method = 'GET', data = null) {
+            const headers = {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json',
+            };
+
+            const config = {
+                method: method,
+                headers: headers,
+            };
+
+            if (data && method !== 'GET') {
+                config.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(url, config);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showNotification(`API Error: ${errorData.message || response.statusText}`, 'error');
+                    throw new Error(errorData.message || response.statusText);
+                }
+                // Handle 204 No Content
+                if (response.status === 204) return { success: true, message: 'Operation successful' };
+                return response.json();
+            } catch (error) {
+                console.error("Fetch failed:", error);
+                return { success: false, message: error.message };
+            }
+        }
+    </script>
+    {% block extra_body_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'payroll_app/base.html' %}
+
+{% block title %}Edit Department{% endblock %}
+
+{% block extra_head_styles %}
+<style>
+    .edit-container {
+        max-width: 520px;
+        margin: 50px auto;
+        background: white;
+        padding: 28px 32px;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+        font-family: Inter, system-ui, Arial;
+    }
+
+    .edit-container h2 {
+        margin-bottom: 18px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #0f172a;
+        text-align: center;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        font-size: 14px;
+        color: #475569;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #dce3ee;
+        background: #f8fafc;
+        font-size: 15px;
+        transition: 0.2s;
+    }
+
+    .form-input:focus {
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        outline: none;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px 14px;
+        background: #2563eb;
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        border: none;
+        font-size: 15px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #1e55d5;
+    }
+
+    .back-link {
+        display: block;
+        margin-top: 14px;
+        text-align: center;
+        font-size: 14px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <h2>Edit Department</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label class="form-label">Department Name</label>
+        <input type="text" name="name" value="{{ department.name }}" class="form-input" required>
+
+        <label class="form-label" style="margin-top:14px;">Head of Department</label>
+        <input type="text" name="head" value="{{ department.head }}" class="form-input" required>
+
+        <button class="submit-btn">Save Changes</button>
+    </form>
+
+    <a href="/admin/dashboard/" class="back-link">← Back to Dashboard</a>
+</div>
+{% endblock %}

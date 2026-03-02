@@ -1,0 +1,166 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Organization Signup | PayMaster{% endblock %}
+
+{% block extra_head_styles %}
+<style>
+    /* Custom styling for the signup page, based on the login CSS */
+    .signup-container {
+        width: 100%;
+        max-width: 550px;
+        padding: 20px;
+        margin-left: 460px;
+    }
+    .signup-card {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .signup-card h1 {
+        color: #1a4ec1;
+        font-size: 1.8rem;
+    }
+    .signup-card .subtitle {
+        color: #355070;
+        margin-bottom: 1.8rem;
+        font-size: 0.95rem;
+    }
+    .form-group {
+        margin-bottom: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    .form-group label {
+        font-weight: 600;
+        color: #0b37a4;
+        margin-bottom: 0.4rem;
+    }
+    .form-group input {
+        padding: 0.8rem;
+        border: 1.5px solid #d0d8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    .signup-btn {
+        background-color: #1a4ec1;
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 0.9rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 0.8rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .signup-btn:hover {
+        background-color: #0b37a4;
+    }
+    .login-link {
+        margin-top: 1.3rem;
+        text-align: center;
+        color: #355070;
+    }
+    .error-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        color: var(--danger);
+        font-size: 0.9rem;
+        text-align: left;
+    }
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+    .form-row .form-group {
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container signup-container">
+    <div class="login-card signup-card">
+        <h1>Register Your Organization</h1>
+        <p class="subtitle">Set up your company and create the Organization Admin account.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Organization Details: Fields from OrganizationRegistrationForm -->
+            <h3 style="text-align: left; color: #1a4ec1; margin-bottom: 10px; font-size: 1.2rem;">Organization Info</h3>
+            
+            <div class="form-group">
+                <label for="id_name">Name</label>
+                <input type="text" id="id_name" name="name" value="{{ org_form.name.value|default:'' }}" placeholder="Organization Name" required>
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                <input type="email" id="id_email" name="email" value="{{ org_form.email.value|default:'' }}" placeholder="Official Email (for system admin verification)" required>
+            </div>
+            <div class="form-group">
+                <label for="id_address">Address</label>
+                <input type="text" id="id_address" name="address" value="{{ org_form.address.value|default:'' }}" placeholder="Organization Address" required>
+            </div>
+
+            <!-- Admin Details: Fields from OrgAdminCreationForm -->
+            <h3 style="text-align: left; color: #1a4ec1; margin-top: 30px; margin-bottom: 10px; font-size: 1.2rem;">Admin Account</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_first_name">First Name</label>
+                    <input type="text" id="id_first_name" name="first_name" value="{{ admin_form.first_name.value|default:'' }}" placeholder="Admin First Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name">Last Name</label>
+                    <input type="text" id="id_last_name" name="last_name" value="{{ admin_form.last_name.value|default:'' }}" placeholder="Admin Last Name (Optional)">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_id_email">Admin Email (Used for login)</label>
+                <!-- Note: The name 'email' here targets the email field in the admin form (User model) -->
+                <input type="email" id="id_id_email" name="email" value="{{ admin_form.email.value|default:'' }}" placeholder="Admin Login Email" required>
+            </div>
+
+            <div class="form-row">
+    <div class="form-group">
+        <label for="id_password1">Password</label>
+        <input type="password" id="id_password1" name="password1" placeholder="Password" required>
+    </div>
+    <div class="form-group">
+        <label for="id_password2">Confirm Password</label>
+        <input type="password" id="id_password2" name="password2" placeholder="Confirm Password" required>
+    </div>
+</div>
+
+            
+            <button type="submit" class="signup-btn">Register Organization & Admin</button>
+        </form>
+
+        <p class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </p>
+
+        <!-- Displaying Form Errors from Django context -->
+        {% if org_form.errors or admin_form.errors or error %}
+            <div class="response-message" style="margin-top: 20px;">
+                <p style="color: var(--danger); font-weight: 700;">Please correct the errors below:</p>
+                <ul class="error-list">
+                {% for field in org_form %}{% for error in field.errors %}<li>Organization {{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+                {% for field in admin_form %}{% for error in field.errors %}<li>Admin {{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+                {% if error %}<li>{{ error }}</li>{% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

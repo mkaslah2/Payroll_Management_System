@@ -1,0 +1,65 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Edit Personnel | PayMaster{% endblock %}
+
+{% block extra_head_styles %}
+<style>
+  .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+  .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+  .btn { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  .btn:hover { background: #1e55d5; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Edit Personnel</h2>
+  <form method="post" action="{% url 'api_edit_personnel_form' user_id=user_obj.id %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="first_name">First Name</label>
+      <input type="text" id="first_name" name="first_name" value="{{ user_obj.first_name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="last_name">Last Name</label>
+      <input type="text" id="last_name" name="last_name" value="{{ user_obj.last_name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ user_obj.email }}" required>
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" name="phone" value="{{ user_obj.phone }}">
+    </div>
+    <div class="form-group">
+      <label for="department">Department</label>
+      <select id="department" name="department" required>
+        {% for dept in departments %}
+        <option value="{{ dept.id }}" {% if dept.id == personnel.department.id %}selected{% endif %}>{{ dept.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="position">Position</label>
+      <input type="text" id="position" name="position" value="{{ personnel.position }}" required>
+    </div>
+    <div class="form-group">
+      <label for="salary">Salary</label>
+      <input type="number" id="salary" name="salary" step="0.01" value="{{ personnel.salary }}" required>
+    </div>
+    <div class="form-group">
+      <label for="password">New Password (leave blank to keep current)</label>
+      <input type="password" id="password" name="password">
+    </div>
+    <button type="submit" class="btn">Update Personnel</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_body_scripts %}
+<!-- No JS needed since values are prefilled -->
+{% endblock %}

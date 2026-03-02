@@ -1,0 +1,553 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Employee Dashboard | PayMaster{% endblock %}
+
+{% block extra_head_styles %}
+<style>
+  :root {
+      --sidebar: #174fc2;
+      --sidebar-dark: #123fae;
+      --bg: #f3f6fb;
+      --card: #fff;
+      --muted: #6b7280;
+      --accent: #0f172a;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 12px;
+      font-family: Inter, system-ui, Arial;
+  }
+/* Fix table alignment issues */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;   /* 🔥 Forces perfect alignment */
+}
+
+/* Ensure headers and rows align */
+.table th, 
+.table td {
+    padding: 12px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;   /* Prevents shift due to long content */
+}
+
+/* Make last column (Download button) smaller */
+.table th:last-child,
+.table td:last-child {
+    width: 120px;       /* Fixed width so buttons don’t stretch whole table */
+    text-align: center; /* Align download buttons */
+}
+
+/* Optional: align all columns equally */
+.table th:nth-child(1),
+.table td:nth-child(1) { width: 20%; }
+.table th:nth-child(2),
+.table td:nth-child(2) { width: 20%; }
+.table th:nth-child(3),
+.table td:nth-child(3) { width: 20%; }
+.table th:nth-child(4),
+.table td:nth-child(4) { width: 20%; }
+
+  * { box-sizing: border-box; }
+  body { margin:0; background: linear-gradient(180deg, var(--bg), #eef4ff); min-height: 100vh; }
+
+  .layout { display:flex; min-height:100vh; }
+
+  .sidebar {
+      width:260px;
+      background: linear-gradient(180deg, var(--sidebar), var(--sidebar-dark));
+      padding:26px 18px;
+      color:white;
+      position:sticky;
+      top:0;
+      height:100vh;
+  }
+
+  .sidebar h2 { font-size:24px; margin-bottom:20px; }
+
+  .sidebar ul { list-style:none; padding:0; margin:0; }
+  .sidebar ul li {
+      padding:10px;
+      margin-bottom:8px;
+      border-radius:8px;
+      cursor:pointer;
+      transition:0.2s;
+  }
+  .sidebar ul li.active,
+  .sidebar ul li:hover {
+      background:rgba(255,255,255,0.1);
+  }
+
+  .main { flex:1; padding:28px 36px; }
+
+  header { display:flex; justify-content:space-between; margin-bottom:20px; }
+
+  .section { display:none; }
+  .section.active { display:block; }
+
+  .cards { display:flex; gap:16px; margin-bottom:20px; }
+  .card {
+      flex:1;
+      background:var(--card);
+      padding:20px;
+      border-radius:var(--radius);
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      text-align:center;
+  }
+
+  .table {
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      border-radius:10px;
+      overflow:hidden;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  }
+  .table th, .table td {
+      padding:12px;
+      border-bottom:1px solid #eee;
+  }
+  .table th {
+      background:#f5f7fa;
+      font-size:13px;
+      text-transform:uppercase;
+      color:#6b7280;
+  }
+
+  .btn {
+      background:var(--primary);
+      color:white;
+      padding:10px 14px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+  }
+  .btn:hover { background:#1e55d5; }
+
+  /* Optional small header bar for sections (your HTML uses it) */
+  .section-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      background:var(--card);
+      padding:12px 16px;
+      border-radius:var(--radius);
+      box-shadow:0 4px 10px rgba(0,0,0,0.03);
+  }
+  .section-header h2 {
+      margin:0;
+      font-size:18px;
+      font-weight:600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>PayMaster</h2>
+
+    <ul>
+      <li class="active" data-section="overview">🏠 Dashboard</li>
+      <li data-section="attendance">🕒 My Attendance</li>
+      <li data-section="leave">📅 Leave Requests</li>
+      <li data-section="payslips">📄 Payslips</li>
+      <li data-section="notifications">🔔 Notifications</li>
+      <li data-section="settings">⚙️ Settings</li>
+     <form id="logoutForm" action="{% url 'logout' %}" method="post" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<li class="logout" onclick="document.getElementById('logoutForm').submit()">
+    🚪 Logout
+</li>
+
+    </ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- HEADER -->
+    <header>
+      <h1 id="pageTitle">Employee Dashboard</h1>
+      <div>
+        Welcome, <strong>{{ user.first_name }}</strong>
+      </div>
+    </header>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="section active">
+      <div class="cards">
+        <div class="card">
+          <h3>Department</h3>
+          <p>{{ user.employee.department.name|default:'N/A' }}</p>
+        </div>
+        <div class="card">
+          <h3>Position</h3>
+          <p>{{ user.employee.position|default:'N/A' }}</p>
+        </div>
+        <div class="card">
+          <h3>Salary</h3>
+          <p>₹{{ user.employee.salary|default:'0' }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="attendance" class="section">
+      <div class="section-header">
+        <h2>My Attendance</h2>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" onclick="markEmployeeAttendance('Present')">Mark Present</button>
+          <button class="btn" onclick="markEmployeeAttendance('Absent')">Mark Absent</button>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Verification</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTable"></tbody>
+      </table>
+    </section>
+
+    <!-- LEAVE -->
+    <section id="leave" class="section">
+  <div class="section-header">
+    <h2>My Leave Requests</h2>
+  </div>
+
+  <div class="card" style="padding:15px; margin-bottom:15px;">
+    <h3>Apply for Leave</h3>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <select id="empLeaveType" class="input">
+        <option value="">Select Leave Type</option>
+        <option>Casual Leave</option>
+        <option>Sick Leave</option>
+        <option>Paid Leave</option>
+      </select>
+
+      <input type="date" id="empLeaveStart" class="input">
+      <input type="date" id="empLeaveEnd" class="input">
+
+      <input type="text" id="empLeaveReason" placeholder="Reason" class="input" style="flex:1;">
+
+      <button class="btn" onclick="submitEmployeeLeave()">Send Request</button>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Type</th><th>Start</th><th>End</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="leaveTable"></tbody>
+  </table>
+</section>
+
+
+    <section id="payslips" class="section">
+  <h2>My Payslips</h2>
+  <table class="table">
+    <thead>
+    <tr>
+        <th>Month</th>
+        <th>Gross</th>
+        <th>Deductions</th>
+        <th>Net</th>
+        <th>Download</th>
+    </tr>
+</thead>
+
+    <tbody id="employeePayslipTable"></tbody>
+  </table>
+</section>
+
+
+    <!-- NOTIFICATIONS -->
+    <section id="notifications" class="section">
+      <h2>Notifications</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Message</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="notificationsTable"></tbody>
+      </table>
+    </section>
+
+    <!-- SETTINGS (added so clicking it won't crash JS) -->
+    <section id="settings" class="section">
+      <h2>Settings</h2>
+      <div class="card" style="max-width:480px; text-align:left; margin-top:10px;">
+        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Organization:</strong> {{ user.organization.name }}</p>
+        <p style="color:#6b7280; font-size:13px; margin-top:8px;">
+         
+        </p>
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body_scripts %}
+<script>
+const ORG_ID = '{{ user.organization.id }}';
+
+// Sidebar behavior
+document.querySelectorAll(".sidebar li[data-section]").forEach(li => {
+  li.addEventListener("click", () => {
+    // Active state
+    document.querySelectorAll(".sidebar li").forEach(x => x.classList.remove("active"));
+    li.classList.add("active");
+
+    const section = li.dataset.section;
+
+    // Switch visible sections
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    const secEl = document.getElementById(section);
+    if (secEl) {
+      secEl.classList.add("active");
+    }
+
+    // Update page title (strip emoji)
+    document.getElementById("pageTitle").textContent = li.textContent.replace(/[\uD800-\uDFFF]/g, '').trim();
+
+    if (section === "leave") fetchLeaves();
+    if (section === "attendance") fetchAttendance();
+    if (section === "notifications") fetchNotifications();
+   if (section === "payslips") loadEmployeePayslips();
+
+  });
+});
+
+// FETCH NOTIFICATIONS
+async function fetchNotifications() {
+  const result = await apiFetch('/api/notification/list/', 'GET');
+  let tbody = document.getElementById("notificationsTable");
+  tbody.innerHTML = "";
+
+  if (result.success && result.notifications && result.notifications.length) {
+    result.notifications.forEach(n => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${n.title}</td>
+          <td>${n.message}</td>
+          <td>${n.sent_at}</td>
+        </tr>
+      `;
+    });
+  } else {
+    tbody.innerHTML = `<tr><td colspan="3">No notifications found.</td></tr>`;
+  }
+}
+
+// FETCH LEAVES – uses same API as HR, but backend filters by request.user
+async function fetchLeaves() {
+  const res = await apiFetch("/api/hr/leave/list/", "GET");
+  let tbody = document.getElementById("leaveTable");
+  tbody.innerHTML = "";
+
+  if (res.success && res.leaves && res.leaves.length) {
+    res.leaves.forEach(l => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${l.leave_type}</td>
+          <td>${l.start}</td>
+          <td>${l.end}</td>
+          <td>${l.status}</td>
+        </tr>
+      `;
+    });
+  } else {
+    tbody.innerHTML = `<tr><td colspan="4">No leave requests.</td></tr>`;
+  }
+}
+
+async function markEmployeeAttendance(status) {
+  const res = await apiFetch("/api/attendance/mark/", "POST", { status });
+  alert(res.message);
+  fetchAttendance();
+}
+
+async function fetchAttendance() {
+  const res = await apiFetch("/api/attendance/employee/list/", "GET");
+  const tbody = document.getElementById("attendanceTable");
+  tbody.innerHTML = "";
+
+  if (!res.success || !res.records || res.records.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3">No attendance records yet.</td></tr>`;
+    return;
+  }
+
+  res.records.forEach(r => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.status}</td>
+        <td>${r.verification}</td>
+      </tr>
+    `;
+  });
+}
+
+// LEAVE REQUEST POPUP
+function requestLeave() {
+  let type = prompt("Leave Type:");
+  let start = prompt("Start Date (YYYY-MM-DD):");
+  let end = prompt("End Date (YYYY-MM-DD):");
+  let reason = prompt("Reason:");
+
+  if (!type || !start || !reason) {
+    alert("Missing fields");
+    return;
+  }
+
+  apiFetch("/api/hr/leave/request/", "POST", {
+    leave_type: type,
+    start_date: start,
+    end_date: end,
+    reason: reason
+  }).then(res => {
+    alert(res.message);
+    fetchLeaves();
+  });
+}
+
+// PAYSLIPS – backend not implemented yet, so show placeholder
+async function fetchPayslips() {
+  const tbody = document.getElementById("payslipTable");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="4">Payslip API not implemented yet.</td>
+    </tr>
+  `;
+}
+
+// API FETCH HELPER
+async function apiFetch(url, method="GET", data=null) {
+  let options = {
+    method: method,
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json"
+    },
+    credentials: "same-origin"
+  };
+  if (data) { options.body = JSON.stringify(data); }
+
+  try {
+    let response = await fetch(url, options);
+    let json = await response.json();
+    return json;
+  } catch (e) {
+    return { success: false, message: "Network or server error" };
+  }
+}
+
+function getCsrfToken() {
+  let cookie = document.cookie.split(";").find(c => c.trim().startsWith("csrftoken="));
+  return cookie ? cookie.split("=")[1] : "";
+}
+
+async function submitEmployeeLeave() {
+    let leave_type = document.getElementById("empLeaveType").value;
+    let start_date = document.getElementById("empLeaveStart").value;
+    let end_date = document.getElementById("empLeaveEnd").value;
+    let reason = document.getElementById("empLeaveReason").value;
+
+    if (!leave_type || !start_date || !reason) {
+        alert("Missing required fields");
+        return;
+    }
+
+    const res = await apiFetch("/api/employee/leave/request/", "POST", {
+        leave_type, start_date, end_date, reason
+    });
+
+    alert(res.message);
+    fetchLeaves();
+}
+
+
+async function fetchLeaves() {
+    const res = await apiFetch("/api/employee/leave/list/", "GET");
+    const tbody = document.getElementById("leaveTable");
+    tbody.innerHTML = "";
+
+    if (!res.success || res.leaves.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">No leave requests.</td></tr>`;
+        return;
+    }
+
+    res.leaves.forEach(l => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${l.leave_type}</td>
+            <td>${l.start}</td>
+            <td>${l.end}</td>
+            <td>${l.status}</td>
+          </tr>
+        `;
+    });
+}
+
+
+// Initial load (overview visible by default)
+document.addEventListener("DOMContentLoaded", () => {
+  // Optional: preload attendance / leaves / notifications if you want:
+  // fetchAttendance();
+  // fetchLeaves();
+  // fetchNotifications();
+});
+
+async function loadEmployeePayslips() {
+    const res = await apiFetch("/api/employee/payslips/", "GET");
+    const tbody = document.getElementById("employeePayslipTable");
+
+    tbody.innerHTML = "";
+
+    if (!res.success || !res.payslips || res.payslips.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5'>No payslips found</td></tr>";
+        return;
+    }
+
+    res.payslips.forEach(p => {
+        tbody.innerHTML += `
+        <tr>
+            <td>${p.month}</td>
+            <td>₹${p.gross}</td>
+            <td>₹${p.deductions}</td>
+            <td>₹${p.net}</td>
+            <td>
+                <button class="btn" onclick="window.location.href='/payslip/download/${p.id}/'">
+                    Download
+                </button>
+            </td>
+        </tr>`;
+    });
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,217 @@
+/* Placeholder for style.css - Landing Page Styles */
+:root {
+  --primary: #1a4ec1;
+  --secondary: #f2f6ff;
+  --accent: #355070;
+  --bg-light: #ffffff;
+  --font-family: 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  color: var(--accent);
+  background-color: var(--bg-light);
+}
+
+/* Header & Nav */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+  background: var(--bg-light);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.logo span {
+  color: #ff9800; /* Amber accent */
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+nav ul li a:hover {
+  color: var(--primary);
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.btn.login {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: transparent;
+}
+
+.btn.login:hover {
+  background: var(--secondary);
+}
+
+.btn.signup, .btn.primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn.signup:hover, .btn.primary:hover {
+  background-color: #0d3aa1;
+}
+
+.btn.secondary {
+    background-color: var(--secondary);
+    color: var(--primary);
+    border-color: var(--secondary);
+}
+
+/* Hero Section */
+.hero {
+  padding: 80px 5%;
+  text-align: center;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--secondary), var(--bg-light));
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.hero-btns {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Features Section */
+.features {
+  padding: 80px 5%;
+  text-align: center;
+}
+
+.features h2, .about h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 40px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card h3 {
+  color: #0f172a;
+  margin-top: 0;
+  font-size: 20px;
+}
+
+/* About Section */
+.about {
+  padding: 60px 5%;
+  background-color: var(--secondary);
+  text-align: center;
+}
+
+.about p {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #94a3b8;
+  border-top: 1px solid #f0f4f8;
+}
+
+/* Align action buttons closer to right in management pages */
+.action-buttons, th.actions, td.actions {
+    text-align: right;
+    padding-right: 15px;
+}
+
+.action-buttons > * {
+    margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    nav ul {
+        justify-content: center;
+    }
+    .hero h1 {
+        font-size: 36px;
+    }
+    .hero-btns {
+        flex-direction: column;
+    }
+}

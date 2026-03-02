@@ -1,0 +1,88 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Login | PayMaster{% endblock %}
+
+{% block extra_head_styles %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+      <h1>Welcome Back 👋</h1>
+      <p class="subtitle">Login to your PayMaster account</p>
+
+      <!-- Role Switch Tabs -->
+      <div class="role-tabs">
+        <button class="tab active" data-role="OrgAdmin">Org Admin</button>
+        <button class="tab" data-role="HR">HR</button>
+        <button class="tab" data-role="Employee">Employee</button>
+      </div>
+
+      <!-- Login Form -->
+      <form method="post" id="loginForm">
+        {% csrf_token %} <!-- Mandatory for Django POST forms -->
+        <input type="hidden" name="role" id="role" value="OrgAdmin" />
+
+        <div class="form-group">
+          <label>Organization ID</label>
+          <input type="text" name="organization_id" id="orgId" placeholder="Enter your Organization ID (UUID)" required />
+        </div>
+
+        <div class="form-group">
+          <label id="idLabel">Admin Email</label>
+          <input type="email" name="username" id="userId" placeholder="Enter your Admin Email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" id="password" placeholder="Enter password" required />
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <p class="signup-link">
+        Don’t have an account? <a href="{% url 'signup' %}">Register your Organization</a>
+      </p>
+
+      <div class="response-message" id="responseMsg">
+        <!-- Display Django errors/messages here -->
+        {% if error %}
+            <p style="color: var(--danger); font-weight: 700;">Error: {{ error }}</p>
+        {% elif messages %}
+            {% for message in messages %}
+                <p style="color: var(--success); font-weight: 700;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block extra_body_scripts %}
+<script>
+    // Role Tab Switch Logic (Client-side only)
+    const tabs = document.querySelectorAll(".tab");
+    const idLabel = document.getElementById("idLabel");
+    const roleInput = document.getElementById("role");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const role = tab.dataset.role;
+        roleInput.value = role;
+
+        let labelText = "";
+        if (role === "OrgAdmin") labelText = "Admin Email";
+        else if (role === "HR") labelText = "HR Email";
+        else labelText = "Employee Email";
+        
+        idLabel.textContent = labelText;
+        document.getElementById('userId').placeholder = `Enter your ${labelText}`;
+      });
+    });
+</script>
+{% endblock extra_body_scripts %}

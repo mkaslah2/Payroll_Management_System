@@ -1,0 +1,130 @@
+{% extends 'payroll_app/base.html' %}
+{% load static %}
+
+{% block title %}Add Department | PayMaster{% endblock %}
+
+{% block extra_head_styles %}
+<style>
+  .add-container {
+      max-width: 520px;
+      margin: 50px auto;
+      background: white;
+      padding: 28px 32px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+      font-family: Inter, system-ui, Arial;
+  }
+
+  .add-container h2 {
+      margin-bottom: 18px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: center;
+  }
+
+  .form-label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 14px;
+      color: #475569;
+  }
+
+  .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #dce3ee;
+      background: #f8fafc;
+      font-size: 15px;
+      transition: 0.2s;
+  }
+
+  .form-input:focus {
+      border-color: #2563eb;
+      background: white;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      outline: none;
+  }
+
+  .submit-btn {
+      width: 100%;
+      padding: 12px 14px;
+      background: #2563eb;
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      border: none;
+      font-size: 15px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .submit-btn:hover {
+      background: #1e55d5;
+  }
+
+  .cancel-btn {
+      width: 100%;
+      padding: 12px 14px;
+      background: #e2e8f0;
+      color: #1e293b;
+      border-radius: 10px;
+      font-weight: 700;
+      border: none;
+      font-size: 15px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+  }
+
+  .cancel-btn:hover {
+      background: #cbd5e1;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="add-container">
+    <h2>Add Department</h2>
+
+    <form id="deptForm">
+        {% csrf_token %}
+
+        <label class="form-label">Department Name</label>
+        <input type="text" id="deptName" name="name" class="form-input" required>
+
+        <label class="form-label" style="margin-top:14px;">Head of Department</label>
+        <input type="text" id="deptHead" name="head" class="form-input" required>
+
+        <button type="submit" class="submit-btn">Save Department</button>
+        <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'org_admin_dashboard' %}'">
+            Cancel
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_body_scripts %}
+<script>
+document.getElementById("deptForm").onsubmit = async function(e) {
+  e.preventDefault();
+  
+  const deptName = document.getElementById("deptName").value;
+  const deptHead = document.getElementById("deptHead").value;
+
+  const data = { name: deptName, head: deptHead };
+
+  const result = await apiFetch('{% url "api_add_department" %}', 'POST', data);
+
+  if (result.success) {
+    showNotification(`Department ${result.name} added successfully!`, 'success');
+    window.location.href = '{% url "org_admin_dashboard" %}';
+  } else {
+    showNotification(`Failed to add department. ${result.message}`, 'error');
+  }
+}
+</script>
+{% endblock %}

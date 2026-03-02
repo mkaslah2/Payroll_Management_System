@@ -1,0 +1,36 @@
+{% extends "payroll_app/base.html" %}
+
+{% block content %}
+<h2>Department Details</h2>
+
+<p><strong>Department Name:</strong> {{ department.name }}</p>
+<p><strong>Department Head:</strong> {{ department.head }}</p>
+
+<h3>Employees in this Department</h3>
+{% if employees.exists %}
+  <table>
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Role</th>
+        <th>Position</th>
+        <th>Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for emp in employees %}
+      <tr>
+        <td>{{ emp.user.first_name }} {{ emp.user.last_name }}</td>
+        <td>{{ emp.user.role }}</td>
+        <td>{{ emp.position }}</td>
+        <td>{{ emp.salary }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No employees found in this department.</p>
+{% endif %}
+
+<p><a href="{% url 'org_admin_dashboard' %}">Back to Admin Dashboard</a></p>
+{% endblock %}
